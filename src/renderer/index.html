@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World!</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+
+  <link rel="stylesheet" href="./main.css" />
+</head>
+
+<body>
+
+
+  <div class="top d-flex flex-row pb-2 mt-3 mb-2 ">
+    <div class="col-9 title">
+      <h4 class="text-center">Pi-Hole</h4>
+    </div>
+
+    <div class="col-3 text-center"><button id="settings"><i class="fas fa-cog"></i></button></div>
+  </div>
+
+  <div class="container">
+    <div id="output">
+      <h2 v-if="loading==1" class="text-center">Loading...
+      </h2>
+      <div v-else-if="error == 1">
+        <p class="text-center">Sorry! <br> Nothing to display :( <br> Have you checked the settings page?</p>
+      </div>
+
+
+      <div v-else>
+        <table class="table">
+
+          <tr>
+            <td class="key text-left"><small>Domains Being Blocked</small> </td>
+            <td class="value text-right"><small>{{raw.domains_being_blocked}}</small></td>
+          </tr>
+
+          <tr>
+            <td class="key text-left"><small>Dns Queries Today</small> </td>
+            <td class="value text-right"><small>{{raw.dns_queries_today}}</small></td>
+          </tr>
+          <tr>
+            <td class="key text-left"><small>Ads Blocked Today</small> </td>
+            <td class="value text-right"><small>{{raw.ads_blocked_today}}</small></td>
+          </tr>
+          <tr>
+            <td class="key text-left"><small>Ads Percentage Today</small> </td>
+            <td class="value text-right"><small>{{raw.ads_percentage_today}}</small></td>
+          </tr>
+          <tr>
+            <td class="key text-left"><small>Unique Domains</small> </td>
+            <td class="value text-right"><small>{{raw.unique_domains}}</small></td>
+          </tr>
+          <tr>
+            <td class="key text-left"><small>Queries Forwarded</small> </td>
+            <td class="value text-right"><small>{{raw.queries_forwarded}}</small></td>
+          </tr>
+          <tr>
+            <td class="key text-left"><small>Queries Cached</small> </td>
+            <td class="value text-right"><small>{{raw.queries_cached}}</small></td>
+          </tr>
+          <tr>
+            <td class="key text-left"><small>Clients Ever Seen</small> </td>
+            <td class="value text-right"><small>{{raw.clients_ever_seen}}</small></td>
+          </tr>
+          <tr>
+            <td class="key text-left"><small>Unique Clients</small> </td>
+            <td class="value text-right"><small>{{raw.unique_clients}}</small></td>
+          </tr>
+        </table>
+
+
+
+
+
+        <div class="panel-group" id="accordion">
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <p class="panel-title" data-toggle="collapse" data-target="#topItems">
+                Top 10 Queries
+              </p>
+            </div>
+            <div id="topItems" class="panel-collapse collapse">
+
+
+
+              <table class="table" v-for="(key,value) in top">
+
+                <tr>
+
+                  <td class="key text-left"><small>{{value}}</small></td>
+                  <td class="value text-right"><small>{{key}}</small> </td>
+                </tr>
+
+              </table>
+
+              <div class="text-center" v-if="top == undefined">
+                <p>Error!</p>
+
+                <p>Can't retrive data, have you entered the correct token?</p>
+                  <br>
+              </div>
+
+          </div>
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+
+</body>
+<script>
+  window.$ = window.jQuery = require('../../node_modules/jquery/dist/jquery.js');
+</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.3/vue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.13/js/all.js" integrity="sha384-xymdQtn1n3lH2wcu0qhcdaOpQwyoarkgLVxC/wZ5q7h9gHtxICrpcaSUfygqZGOe" crossorigin="anonymous"></script>
+<script src="./index.js"></script>
+
+
+</html>

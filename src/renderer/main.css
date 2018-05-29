@@ -1,0 +1,98 @@
+body{
+  background-color: #343d46;
+  color: white;
+}
+
+.key{
+  text-transform: capitalize;
+  color: #fc3267;
+}
+.title {
+  border-right: 0.5px solid black;
+}
+
+.top{
+  border-bottom: 0.5px solid grey;
+
+}
+
+td{
+  border-bottom: 1px solid white;
+  border-top: 0;
+}
+
+.table td, .table th{
+  border-top: 0;
+}
+
+
+
+.table td, .table th{
+  vertical-align: inherit;
+}
+
+.panel-title {
+  position: relative;
+    cursor: pointer;
+}
+
+.panel-title::after {
+	  font-family: "Font Awesome 5 Free";
+  content:"\f359";
+	top: -2px;
+	right: 0px;
+	position: absolute;
+
+
+
+}
+
+.panel-title[aria-expanded="true"]::after {
+	content: "\f358";
+
+}
+
+
+.form-control{
+  background: none;
+  border: none;
+  border-bottom: solid 1px white;
+  border-radius: 0;
+  outline: none;
+  box-shadow:none;
+  color:white;
+}
+.form-control:focus{
+  background: none;
+  border: none;
+  border-bottom: solid 1px white;
+  border-radius: 0;
+  outline: none;
+  box-shadow:none;
+  color:white;
+}
+
+
+
+#settings{
+  cursor: pointer;
+  color: white;
+  background: none;
+  border: none;
+  outline: none;
+  box-shadow:none;
+    transition: color 0.3s;
+}
+#settings:focus{
+  cursor: pointer;
+  color: white;
+  background: none;
+  border: none;
+  outline: none;
+  box-shadow:none;
+
+}
+
+#settings:hover {
+  color: grey;
+}
