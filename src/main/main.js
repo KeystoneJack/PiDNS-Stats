@@ -8,6 +8,7 @@ const {
 } = require('electron')
 const path = require('path')
 const url = require('url')
+const positioner = require('electron-traywindow-positioner')
 
 let mainWindow = null;
 let tray = null;
@@ -75,23 +76,11 @@ const toggleWindow = () => {
   }
 }
 
-const getWindowPosition = () => {
-  const windowBounds = mainWindow.getBounds()
-  const trayBounds = tray.getBounds()
-
-  const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2))
-
-  const y = Math.round(trayBounds.y + trayBounds.height + 4)
-
-  return {
-    x: x,
-    y: y
-  }
-}
 
 const showWindow = () => {
-  const position = getWindowPosition()
-  mainWindow.setPosition(position.x, position.y, false)
+  const trayBounds = tray.getBounds()
+
+positioner.position(mainWindow, trayBounds);
   mainWindow.show()
   mainWindow.focus()
 }

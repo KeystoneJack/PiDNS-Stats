@@ -31,12 +31,12 @@
         "packageManager": "yarn"
       },
       "electronInstallerDMG": {
-        "title":"Pi-DNS Stats Installer",
+        "title": "Pi-DNS Stats Installer",
         "icon": "./src/assets/icon.icns",
         "window": {
           "size": {
             "width": "200",
-            "height" : "200"
+            "height": "200"
           }
         }
       }
@@ -46,8 +46,9 @@
     "electron": "2.0.2",
     "electron-compile": "^6.4.2",
     "electron-squirrel-startup": "^1.0.0",
-    "jquery": "^3.3.1",
-    "electron-store": "^1.3.0"
+    "electron-store": "^1.3.0",
+    "electron-traywindow-positioner": "^0.0.2",
+    "jquery": "^3.3.1"
   },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",
