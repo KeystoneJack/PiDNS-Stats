@@ -2,6 +2,8 @@
 
 A mac app for looking at DNS Blocker stats, just a simple tray app.
 
+![alt text](https://raw.githubusercontent.com/KeystoneJack/PiDNS-Stats/master/Screenshot.png)
+
 # Running from source
 
 Git clone this repository and then run npm install or yarn. After that just run npm start or yarn start
