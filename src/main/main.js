@@ -46,7 +46,7 @@ mainWindow = new BrowserWindow({
     height: 300,
     backgroundColor: '#312450',
     show: false,
-    parent: mainWindow
+    //parent: mainWindow
   })
 
   secondWindow.loadURL(url.format({
@@ -105,9 +105,13 @@ ipcMain.on("user-data", function(event, arg) {
   mainWindow.show();
 });
 
+ipcMain.on("exit-stats", function(event, arg) {
+  app.quit();
+});
 
 ipcMain.on("open-settings", function(event, arg) {
   secondWindow.show();
+  //mainWindow.hide()
 });
 
 ipcMain.on("exit-stats", function(event, arg) {
