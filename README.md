@@ -1,6 +1,6 @@
 # PiDNS Stats
 
-A mac app for looking at DNS Blocker stats, just a simple tray app.
+A mac app for looking at DNS Blocker stats, just a simple tray app. Download it from realeses https://github.com/KeystoneJack/PiDNS-Stats/releases
 
 ![alt text](https://raw.githubusercontent.com/KeystoneJack/PiDNS-Stats/master/Screenshot.png)
 
