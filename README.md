@@ -2,6 +2,10 @@
 
 A mac app for looking at DNS Blocker stats, just a simple tray app.
 
+# Running from source
+
+Git clone this repository and then run npm install or yarn. After that just run npm start or yarn start
+
 # First Run
 Remember to open settings and enter your hostname, it needs to be with HTTP or HTTPS, and then add what interval you want to use for fetching.
 
