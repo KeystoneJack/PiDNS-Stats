@@ -79,15 +79,24 @@ const getWindowPosition = () => {
   const windowBounds = mainWindow.getBounds()
   const trayBounds = tray.getBounds()
 
-  const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2))
+  // check for sensible position of tray icon.
+  // some systems will return all zero, so push to right instead.
 
-  const y = Math.round(trayBounds.y + trayBounds.height + 4)
-
-  return {
-    x: x,
-    y: y
+  if ( trayBounds.x != '0' ) {
+    const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
+    const y = Math.round(trayBounds.y + trayBounds.height + 4)
+    return {
+      x: x,
+      y: y }
+    } else {
+    const x = (windowBounds.x * 2);
+    const y = Math.round(trayBounds.y + trayBounds.height + 4)
+    return {
+      x: x,
+      y: y }
   }
 }
+
 
 const showWindow = () => {
   const position = getWindowPosition()
