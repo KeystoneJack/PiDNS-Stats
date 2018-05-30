@@ -121,6 +121,11 @@ ipcMain.on("open-settings", function(event, arg) {
   secondWindow.show();
 });
 
+ipcMain.on("exit-stats", function(event, arg) {
+  app.quit();
+});
+
+
 //Creates mainWindow and secondWindow and makes CMD + C and CMD + V work.
 app.on('ready', function() {
   createWindow();
