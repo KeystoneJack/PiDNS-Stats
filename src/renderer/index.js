@@ -41,6 +41,7 @@ new Vue({
     };
 
     var auth = token;
+      ipcRenderer.send("set-icon", "normal");
       axios.all([
             axios.get('/admin/api.php?topItems=10&auth=' + auth, config),
              axios.get("/admin/api.php", config)
@@ -57,6 +58,7 @@ new Vue({
        }))
        .catch((error) => {
          // Error
+         ipcRenderer.send("set-icon", "fail");
          if (error.response) {
            this.error = 1;
            this.loading = 0;
@@ -82,6 +84,7 @@ new Vue({
     };
     var auth = token;
     var self = this;
+      ipcRenderer.send("set-icon", "normal");
       axios.all([
 
              setInterval(function(){
@@ -100,6 +103,7 @@ new Vue({
 
        .catch((error) => {
          // Error
+         ipcRenderer.send("set-icon", "fail");
          if (error.response) {
            this.error = 1;
            this.loading = 0;

@@ -114,8 +114,16 @@ ipcMain.on("open-settings", function(event, arg) {
   //mainWindow.hide()
 });
 
-ipcMain.on("exit-stats", function(event, arg) {
-  app.quit();
+ipcMain.on("set-icon", function(event, arg) {
+  console.log(arg);
+  const trayIconNormal = path.join(__dirname, '../assets/icon.png');
+  const trayIconFail = path.join(__dirname, '../assets/iconfail.png');
+  if ( arg == "normal" ) {
+   tray.setImage(trayIconNormal);
+}
+  if ( arg == "fail" ) {
+   tray.setImage(trayIconFail);
+}
 });
 
 
