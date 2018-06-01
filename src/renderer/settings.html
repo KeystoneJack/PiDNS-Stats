@@ -28,6 +28,7 @@
     <button id="exitBtn" class="btn btn-danger">Exit PiDNS-Stats</button>
 
   </div>
+  <div class="text-center pt-2"><small class="text-muted">Current version: <div id="version">v????</div></small></div>
 </div>
 <script>
   window.$ = window.jQuery = require('../../node_modules/jquery/dist/jquery.js');
@@ -38,14 +39,13 @@
   const store = new Store();
   const remote = require('electron').remote;
   const ipcRenderer = require('electron').ipcRenderer;
-
+  const appVersion = require('electron').remote.app.getVersion();
 
   //Store the diffrent settings in settings page
   var storeHostname = store.get("hostname");
   var storeInterval = store.get("interval");
   var storeToken = store.get("token");
-
-
+  $("#version").text(appVersion);
   $("#hostname").val(storeHostname)
   $("#intervalInput").val(storeInterval)
   $("#tokenInput").val(storeToken)
