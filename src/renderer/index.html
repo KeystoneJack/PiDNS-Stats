@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>PiDNS Stats</title>
+  <title>Stats for Pi-Hole</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
 
@@ -16,7 +16,7 @@
 
   <div class="top d-flex flex-row pb-2 mt-3 mb-2 ">
     <div class="col-9 title">
-      <h4 class="text-center">PiDNS</h4>
+      <h4 class="text-center">Stats for Pi-Hole</h4>
     </div>
 
     <div class="col-3 text-center"><button id="settings"><i class="fas fa-cog"></i></button></div>
@@ -35,7 +35,7 @@
         <table class="table">
 
           <tr>
-            <td class="key text-left"><small>Domains Being Blocked</small> </td>
+            <td class="key text-left"><small>Domains Blocked</small> </td>
             <td class="value text-right"><small>{{raw.domains_being_blocked}}</small></td>
           </tr>
 
@@ -48,8 +48,8 @@
             <td class="value text-right"><small>{{raw.ads_blocked_today}}</small></td>
           </tr>
           <tr>
-            <td class="key text-left"><small>Ads Percentage Today</small> </td>
-            <td class="value text-right"><small>{{Math.round(raw.ads_percentage_today)}}%</small></td>
+            <td class="key text-left"><small>Ads % Today</small> </td>
+            <td class="value text-right"><small>{{Math.round(raw.ads_percentage_today * 100)/100}}%</small></td>
           </tr>
           <tr>
             <td class="key text-left"><small>Unique Domains</small> </td>
@@ -71,7 +71,15 @@
             <td class="key text-left"><small>Unique Clients</small> </td>
             <td class="value text-right"><small>{{raw.unique_clients}}</small></td>
           </tr>
+          <tr>
+            <td class="key text-left"><small>Recently Blocked</small></td>
+            <td class="value recent text-right"> <small>{{recent}}</small></td>
+          </tr>
+          
         </table>
+
+       
+     
 
 
 
@@ -114,7 +122,7 @@
         </div>
 
       </div>
-
+   
 
     </div>
   </div>

@@ -6,6 +6,10 @@ body{
 .key{
   text-transform: capitalize;
   color: #fc3267;
+  font-size: 0.9rem;
+}
+.value {
+  font-size: 0.9rem;
 }
 .title {
   border-right: 0.5px solid black;
@@ -15,7 +19,9 @@ body{
   border-bottom: 0.5px solid grey;
 
 }
-
+.recent {
+  font-size: 0.8rem;
+}
 td{
   border-bottom: 1px solid white;
   border-top: 0;
@@ -34,6 +40,7 @@ td{
 .panel-title {
   position: relative;
     cursor: pointer;
+   
 }
 
 .panel-title::after {
@@ -41,14 +48,16 @@ td{
   content:"\f359";
 	top: -2px;
 	right: 0px;
-	position: absolute;
-
-
+  position: absolute;
+  transform: rotate(0deg);
+  transition: all 0.3s ease;
 
 }
 
 .panel-title[aria-expanded="true"]::after {
-	content: "\f358";
+  /*content: "\f358"; */
+  content:"\f359";
+  transform: rotate(-90deg);
 
 }
 

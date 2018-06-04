@@ -9,6 +9,10 @@ const {
 const path = require('path')
 const url = require('url')
 const positioner = require('electron-traywindow-positioner')
+const {autoUpdater} = require("electron-updater");
+const log = require('electron-log');
+
+
 
 let mainWindow = null;
 let tray = null;
@@ -16,22 +20,22 @@ let secondWindow = null;
 
 function createWindow() {
 
+ // mainWindow.webContents.openDevTools()
 
 mainWindow = new BrowserWindow({
-    width: 300,
+    width: 315,
     height: 590,
     show: false,
     frame: false,
     fullscreenable: false,
-    resizable: false,
+    resizable: true,
     transparent: true,
     webPreferences: {
-      // Prevents renderer process code from not running when window is
-      // hidden
+      // Prevents renderer process code from not running when window is hidden
       backgroundThrottling: false
     }
   })
-//mainWindow.webContents.openDevTools()
+
 
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, '../renderer/index.html'),
@@ -43,12 +47,12 @@ mainWindow = new BrowserWindow({
   secondWindow = new BrowserWindow({
     frame: false,
     width: 500,
-    height: 300,
+    height: 330,
     backgroundColor: '#312450',
     show: false,
     //parent: mainWindow
   })
-
+  
   secondWindow.loadURL(url.format({
     pathname: path.join(__dirname, '../renderer/settings.html'),
     protocol: 'file:',
@@ -86,8 +90,15 @@ positioner.position(mainWindow, trayBounds);
 }
 
 const trayMenu = () => {
-  const trayIcon = path.join(__dirname, '../assets/icon.png');
-   tray = new Tray(trayIcon);
+  if(process.platform==="darwin"){
+    const trayIcon = path.join(__dirname, '../assets/darwin/iconTemplate@2x.png');
+    tray = new Tray(trayIcon);
+  } else {
+    const trayIcon = path.join(__dirname, '../assets/win/icon.png');
+    tray = new Tray(trayIcon);
+  }
+  
+   
 
 
   tray.on('double-click', function() {
@@ -111,28 +122,33 @@ ipcMain.on("exit-stats", function(event, arg) {
 
 ipcMain.on("open-settings", function(event, arg) {
   secondWindow.show();
-  //mainWindow.hide()
+  
 });
 
-ipcMain.on("set-icon", function(event, arg) {
-  console.log(arg);
-  const trayIconNormal = path.join(__dirname, '../assets/icon.png');
-  const trayIconFail = path.join(__dirname, '../assets/iconfail.png');
-  if ( arg == "normal" ) {
-   tray.setImage(trayIconNormal);
+if(process.platform==="darwin"){
+  ipcMain.on("set-icon", function(event, arg) {
+
+    const trayIconNormal = path.join(__dirname, '../assets/darwin/iconTemplate@2x.png');
+    const trayIconFail = path.join(__dirname, '../assets/darwin/iconfailTemplate@2x.png');
+    if ( arg == "normal" ) {
+     tray.setImage(trayIconNormal);
+  }
+    if ( arg == "fail" ) {
+     tray.setImage(trayIconFail);
+  }
+  });
 }
-  if ( arg == "fail" ) {
-   tray.setImage(trayIconFail);
-}
-});
+
 
 
 //Creates mainWindow and secondWindow and makes CMD + C and CMD + V work.
 app.on('ready', function() {
   createWindow();
+  autoUpdater.checkForUpdatesAndNotify();
   trayMenu();
 
   if (process.platform === 'darwin') {
+    app.dock.hide();
   // Create our menu entries so that we can use MAC shortcuts
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     {
@@ -153,6 +169,35 @@ app.on('ready', function() {
 }
 });
 
+function sendStatusToWindow(text) {
+
+  mainWindow.webContents.send('update', text);
+}
+
+//This is for future use. Note that valid now
+autoUpdater.on('checking-for-update', () => {
+  sendStatusToWindow('Checking for update...');
+})
+autoUpdater.on('update-available', (info) => {
+  sendStatusToWindow('Update available.');
+  console.log(info);
+})
+autoUpdater.on('update-not-available', (info) => {
+  sendStatusToWindow('Update not available.');
+})
+autoUpdater.on('error', (err) => {
+  sendStatusToWindow('Error in auto-updater. ' + err);
+  console.log(err)
+})
+autoUpdater.on('download-progress', (progressObj) => {
+  
+  console.log(progressObj)
+})
+autoUpdater.on('update-downloaded', (info) => {
+  sendStatusToWindow('Update downloaded');
+  console.log(info);
+});
+
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
 
@@ -171,3 +216,11 @@ app.on('activate', () => {
 
 //Thanks to Kenneth, The Viking of the North for the name
 //Thanks to Josy_Dom_Alexis on Pixabay for the icon
+
+
+
+
+
+
+
+

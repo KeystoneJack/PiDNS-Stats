@@ -12,6 +12,7 @@ var hostname = store.get("hostname");
 var intervalTime = 10;
 intervalTime = store.get("interval");
 
+
 //Send ipc to main.js to open settings
 $("#settings").click(function() {
   ipcRenderer.send("open-settings", "an-argument");
@@ -27,6 +28,8 @@ new Vue({
     return {
       raw: [],
       top: [],
+      recent: [],
+      //statusDNS: [], //For upcoming release
       loading: 1,
       error: 0
 
@@ -44,15 +47,23 @@ new Vue({
       ipcRenderer.send("set-icon", "normal");
       axios.all([
             axios.get('/admin/api.php?topItems=10&auth=' + auth, config),
-             axios.get("/admin/api.php", config)
+            axios.get("/admin/api.php", config),
+            axios.get("/admin/api.php?recentBlocked", config)
+            //axios.get("/admin/api.php?status&auth="+ auth, config)
+
+            
            ])
-       .then(axios.spread((topItems, rawData) => {
+     
+       .then(axios.spread((topItems, rawData, recentData) => {
          this.top = topItems.data.top_queries;
          this.raw = rawData.data;
-
+         this.recent = recentData.data;
+         //this.statusDNS = JSON.stringify(response.data).slice(11,18); //For upcoming release
+        
         //For setting error and loading screen
          this.loading = 0;
          this.error=0;
+
 
 
        }))
@@ -97,9 +108,29 @@ new Vue({
                self.raw=response.data
                self.loading = 0;
                self.error = 0;
-             })
+             });
+             axios.get("/admin/api.php?recentBlocked", config).then(response => {
+              self.recent=response.data;
+              
+            });
+
+             /*
+            -----------------------------------------------------------------------------------
+            This is for an upcoming release where you request status of Pi-Hole and the displays
+            that in the app itself. Will be a toggle swith so you can switch it off and on.
+            -----------------------------------------------------------------------------------
+             */
+
+            /* axios.get("/admin/api.php?status&auth="+ auth, config).then(response => {
+               
+               self.loading = 0;
+               self.error = 0;
+               self.statusDNS = JSON.stringify(response.data).slice(11,18);
+               
+             });*/
            },intervalTime*1000)
            ])
+
 
        .catch((error) => {
          // Error
