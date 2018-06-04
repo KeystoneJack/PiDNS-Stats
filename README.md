@@ -1,4 +1,4 @@
-# PiDNS Stats
+# Stats for Pi-Hole
 
 A mac app for looking at DNS Blocker stats, just a simple tray app. Download it from realeses https://github.com/KeystoneJack/PiDNS-Stats/releases
 
