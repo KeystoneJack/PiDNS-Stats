@@ -17,6 +17,7 @@ const log = require('electron-log');
 let mainWindow = null;
 let tray = null;
 let secondWindow = null;
+let status = true;
 
 function createWindow() {
 
@@ -90,6 +91,32 @@ positioner.position(mainWindow, trayBounds);
 }
 
 const trayMenu = () => {
+  //Makes the contextmenu
+  const contextMenu = Menu.buildFromTemplate([
+
+ 
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit()
+      }
+    },
+    {
+     
+    
+        label: "Enabled",
+      type: "checkbox",
+      click: () => {
+        //axios function here
+      }
+    
+  }
+  
+  ])
+  contextMenu.items[1].checked = status
+  
+
+
   if(process.platform==="darwin"){
     const trayIcon = path.join(__dirname, '../assets/darwin/iconTemplate@2x.png');
     tray = new Tray(trayIcon);
@@ -98,35 +125,41 @@ const trayMenu = () => {
     tray = new Tray(trayIcon);
   }
   
-   
+
+ 
 
 
-  tray.on('double-click', function() {
-    app.quit()
-  });
+
   tray.on('click', toggleWindow);
+
+  //Makes it possible to right click to close the app and not double click
+  tray.on('right-click', () => {
+    tray.popUpContextMenu(contextMenu)
+  });
 
 
 }
 
+
+
 //For opening and closing second window or settings window, on close it reloads mainWindow
-ipcMain.on("user-data", function(event, arg) {
+ipcMain.on("user-data", (event, arg) => {
   secondWindow.hide()
   mainWindow.reload();
   mainWindow.show();
 });
 
-ipcMain.on("exit-stats", function(event, arg) {
+ipcMain.on("exit-stats", (event, arg) => {
   app.quit();
 });
 
-ipcMain.on("open-settings", function(event, arg) {
+ipcMain.on("open-settings", (event, arg) => {
   secondWindow.show();
   
 });
 
 if(process.platform==="darwin"){
-  ipcMain.on("set-icon", function(event, arg) {
+  ipcMain.on("set-icon", (event, arg) => {
 
     const trayIconNormal = path.join(__dirname, '../assets/darwin/iconTemplate@2x.png');
     const trayIconFail = path.join(__dirname, '../assets/darwin/iconfailTemplate@2x.png');
@@ -142,7 +175,11 @@ if(process.platform==="darwin"){
 
 
 //Creates mainWindow and secondWindow and makes CMD + C and CMD + V work.
-app.on('ready', function() {
+
+// Starts the app
+//---------------------------------
+app.on('ready', () => {
+  
   createWindow();
   autoUpdater.checkForUpdatesAndNotify();
   trayMenu();
