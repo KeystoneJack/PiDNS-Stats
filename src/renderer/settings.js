@@ -1,6 +1,5 @@
 const Store = require("electron-store")
 const store = new Store();
-const remote = require('electron').remote;
 const ipcRenderer = require('electron').ipcRenderer;
 const appVersion = require('electron').remote.app.getVersion();
 

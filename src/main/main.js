@@ -1,23 +1,29 @@
 const {
-  clipboard,
+  dialog,
   app,
   BrowserWindow,
   Tray,
   Menu,
   ipcMain
-} = require('electron')
-const path = require('path')
-const url = require('url')
-const positioner = require('electron-traywindow-positioner')
-const {autoUpdater} = require("electron-updater");
-const log = require('electron-log');
+} = require("electron")
+const path = require("path")
+const url = require("url")
+const positioner = require("electron-traywindow-positioner")
+const {autoUpdater} = require("electron-updater")
+const axios = require("axios")
+const Store = require("electron-store")
+const store = new Store();
+const jquery = require("jquery")
 
 
 
 let mainWindow = null;
 let tray = null;
 let secondWindow = null;
-let status = true;
+let infoWindow = null;
+var status;
+let hostname = store.get("hostname")
+var token = store.get("token")
 
 function createWindow() {
 
@@ -39,8 +45,8 @@ mainWindow = new BrowserWindow({
 
 
   mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, '../renderer/index.html'),
-    protocol: 'file:',
+    pathname: path.join(__dirname, "../renderer/index.html"),
+    protocol: "file:",
     slashes: true
   }))
 
@@ -49,25 +55,45 @@ mainWindow = new BrowserWindow({
     frame: false,
     width: 500,
     height: 330,
-    backgroundColor: '#312450',
+
     show: false,
-    //parent: mainWindow
+
   })
   
   secondWindow.loadURL(url.format({
-    pathname: path.join(__dirname, '../renderer/settings.html'),
-    protocol: 'file:',
+    pathname: path.join(__dirname, "../renderer/settings.html"),
+    protocol: "file:",
     slashes: true
   }))
 
-  mainWindow.on('closed', () => {
+  infoWindow = new BrowserWindow({
+    frame: true,
+    width: 500,
+    height: 200,
+    show: false,
+    fullscreenable: false,
+    maximizable: false
 
+  })
+  
+  infoWindow.loadURL(url.format({
+    pathname: path.join(__dirname, "../renderer/info.html"),
+    protocol: "file:",
+    slashes: true
+  }))
+
+  mainWindow.on("closed", () => {
     mainWindow = null
   })
-  mainWindow.on('blur', () => {
+  mainWindow.on("blur", () => {
     if (!mainWindow.webContents.isDevToolsOpened()) {
       mainWindow.hide()
     }
+  })
+
+  infoWindow.on("close", (info) => {
+   // info.preventDefault();
+    infoWindow.hide()
   })
 }
 
@@ -96,7 +122,7 @@ const trayMenu = () => {
 
  
     {
-      label: 'Quit',
+      label: "Quit",
       click: () => {
         app.quit()
       }
@@ -104,24 +130,64 @@ const trayMenu = () => {
     {
      
     
-        label: "Enabled",
+      label: "Enabled",
       type: "checkbox",
       click: () => {
-        //axios function here
+        if(status == true)
+        {
+          axios.post(hostname+"/admin/api.php?disable&auth="+token).then(response =>{
+          console.log(response.data)
+          status = false
+          })
+          
+        } else {
+          axios.post(hostname +"/admin/api.php?enable&auth="+token).then(response =>{
+            status = true
+            
+          })
+          
+        }
       }
     
+  },
+  {
+    label: "Info",
+    click: () => {
+      infoWindow.show()
+    }
+  },
+  {
+    label: "Settings",
+    click: () => {
+      secondWindow.show()
+    }
   }
   
   ])
-  contextMenu.items[1].checked = status
+
+
+
+axios.get(hostname + "/admin/api.php?").then(response => {
+  console.log(response.data.status)
+  if(response.data.status == "enabled"){
+    status = true
+    contextMenu.items[1].checked = true
+    
+  } else {
+    status = false
+    contextMenu.items[1].checked = false
+   
+  }
+})
+  
   
 
 
   if(process.platform==="darwin"){
-    const trayIcon = path.join(__dirname, '../assets/darwin/iconTemplate@2x.png');
+    const trayIcon = path.join(__dirname, "../assets/darwin/iconTemplate@2x.png");
     tray = new Tray(trayIcon);
   } else {
-    const trayIcon = path.join(__dirname, '../assets/win/icon.png');
+    const trayIcon = path.join(__dirname, "../assets/win/icon.png");
     tray = new Tray(trayIcon);
   }
   
@@ -130,10 +196,10 @@ const trayMenu = () => {
 
 
 
-  tray.on('click', toggleWindow);
+  tray.on("click", toggleWindow);
 
   //Makes it possible to right click to close the app and not double click
-  tray.on('right-click', () => {
+  tray.on("right-click", () => {
     tray.popUpContextMenu(contextMenu)
   });
 
@@ -161,8 +227,8 @@ ipcMain.on("open-settings", (event, arg) => {
 if(process.platform==="darwin"){
   ipcMain.on("set-icon", (event, arg) => {
 
-    const trayIconNormal = path.join(__dirname, '../assets/darwin/iconTemplate@2x.png');
-    const trayIconFail = path.join(__dirname, '../assets/darwin/iconfailTemplate@2x.png');
+    const trayIconNormal = path.join(__dirname, "../assets/darwin/iconTemplate@2x.png");
+    const trayIconFail = path.join(__dirname, "../assets/darwin/iconfailTemplate@2x.png");
     if ( arg == "normal" ) {
      tray.setImage(trayIconNormal);
   }
@@ -178,28 +244,28 @@ if(process.platform==="darwin"){
 
 // Starts the app
 //---------------------------------
-app.on('ready', () => {
+app.on("ready", () => {
   
   createWindow();
   autoUpdater.checkForUpdatesAndNotify();
   trayMenu();
 
-  if (process.platform === 'darwin') {
+  if (process.platform === "darwin") {
     app.dock.hide();
   // Create our menu entries so that we can use MAC shortcuts
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     {
-      label: 'Edit',
+      label: "Edit",
       submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
-        { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'pasteandmatchstyle' },
-        { role: 'delete' },
-        { role: 'selectall' }
+        { role: "undo" },
+        { role: "redo" },
+        { type: "separator" },
+        { role: "cut" },
+        { role: "copy" },
+        { role: "paste" },
+        { role: "pasteandmatchstyle" },
+        { role: "delete" },
+        { role: "selectall" }
       ]
     }
   ]));
@@ -208,42 +274,44 @@ app.on('ready', () => {
 
 function sendStatusToWindow(text) {
 
-  mainWindow.webContents.send('update', text);
+  mainWindow.webContents.send("update", text);
 }
 
 //This is for future use. Note that valid now
-autoUpdater.on('checking-for-update', () => {
-  sendStatusToWindow('Checking for update...');
+autoUpdater.on("checking-for-update", () => {
+  sendStatusToWindow("Checking for update...");
 })
-autoUpdater.on('update-available', (info) => {
-  sendStatusToWindow('Update available.');
+autoUpdater.on("update-available", (info) => {
+  sendStatusToWindow("Update available.");
   console.log(info);
 })
-autoUpdater.on('update-not-available', (info) => {
-  sendStatusToWindow('Update not available.');
+autoUpdater.on("update-not-available", (info) => {
+  sendStatusToWindow("Update not available.");
 })
-autoUpdater.on('error', (err) => {
-  sendStatusToWindow('Error in auto-updater. ' + err);
+autoUpdater.on("error", (err) => {
+  sendStatusToWindow("Error in auto-updater. " + err);
   console.log(err)
 })
-autoUpdater.on('download-progress', (progressObj) => {
+autoUpdater.on("download-progress", (progressObj) => {
   
   console.log(progressObj)
 })
-autoUpdater.on('update-downloaded', (info) => {
-  sendStatusToWindow('Update downloaded');
-  console.log(info);
-});
+
+
+autoUpdater.on("update-downloaded", (releaseNotes) => {
+  sendStatusToWindow("Update available.");
+  console.log(releaseNotes);
+})
 
 // Quit when all windows are closed.
-app.on('window-all-closed', () => {
+app.on("window-all-closed", () => {
 
-  if (process.platform !== 'darwin') {
+  if (process.platform !== "darwin") {
     app.quit()
   }
 })
 
-app.on('activate', () => {
+app.on("activate", () => {
 
   if (mainWindow === null) {
     createWindow()
