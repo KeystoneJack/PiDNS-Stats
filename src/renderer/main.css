@@ -4,7 +4,7 @@ body{
 }
 
 .key{
-  text-transform: capitalize;
+  /*text-transform: capitalize; */
   color: #fc3267;
   font-size: 0.9rem;
 }
@@ -40,7 +40,7 @@ td{
 .panel-title {
   position: relative;
     cursor: pointer;
-   
+
 }
 
 .panel-title::after {

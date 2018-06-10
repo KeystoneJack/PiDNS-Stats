@@ -5,7 +5,7 @@
     "name": "KeystoneJack"
   },
   "license": "MIT",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Tray app for checking your DNS block stats",
   "main": "src/main/main.js",
   "scripts": {

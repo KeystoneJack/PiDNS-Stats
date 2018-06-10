@@ -1,5 +1,4 @@
 const {
-  dialog,
   app,
   BrowserWindow,
   Tray,
@@ -7,20 +6,16 @@ const {
   ipcMain
 } = require("electron")
 const path = require("path")
+const autoUpdater = require('../auto-updater/auto-updater')
 const url = require("url")
 const positioner = require("electron-traywindow-positioner")
-const {autoUpdater} = require("electron-updater")
 const axios = require("axios")
 const Store = require("electron-store")
 const store = new Store();
-const jquery = require("jquery")
-
-
 
 let mainWindow = null;
 let tray = null;
 let secondWindow = null;
-let infoWindow = null;
 var status;
 let hostname = store.get("hostname")
 var token = store.get("token")
@@ -35,7 +30,7 @@ mainWindow = new BrowserWindow({
     show: false,
     frame: false,
     fullscreenable: false,
-    resizable: true,
+    resizable: false,
     transparent: true,
     webPreferences: {
       // Prevents renderer process code from not running when window is hidden
@@ -43,13 +38,11 @@ mainWindow = new BrowserWindow({
     }
   })
 
-
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, "../renderer/index.html"),
     protocol: "file:",
     slashes: true
   }))
-
 
   secondWindow = new BrowserWindow({
     frame: false,
@@ -59,28 +52,13 @@ mainWindow = new BrowserWindow({
     show: false,
 
   })
-  
+
   secondWindow.loadURL(url.format({
     pathname: path.join(__dirname, "../renderer/settings.html"),
     protocol: "file:",
     slashes: true
   }))
 
-  infoWindow = new BrowserWindow({
-    frame: true,
-    width: 500,
-    height: 200,
-    show: false,
-    fullscreenable: false,
-    maximizable: false
-
-  })
-  
-  infoWindow.loadURL(url.format({
-    pathname: path.join(__dirname, "../renderer/info.html"),
-    protocol: "file:",
-    slashes: true
-  }))
 
   mainWindow.on("closed", () => {
     mainWindow = null
@@ -91,13 +69,8 @@ mainWindow = new BrowserWindow({
     }
   })
 
-  infoWindow.on("close", (info) => {
-   // info.preventDefault();
-    infoWindow.hide()
-  })
+
 }
-
-
 
 const toggleWindow = () => {
   if (mainWindow.isVisible()) {
@@ -106,7 +79,6 @@ const toggleWindow = () => {
     showWindow()
   }
 }
-
 
 const showWindow = () => {
   const trayBounds = tray.getBounds()
@@ -118,70 +90,56 @@ positioner.position(mainWindow, trayBounds);
 
 const trayMenu = () => {
   //Makes the contextmenu
-  const contextMenu = Menu.buildFromTemplate([
 
- 
+/*  const contextMenu = Menu.buildFromTemplate([
     {
-      label: "Quit",
-      click: () => {
-        app.quit()
-      }
-    },
-    {
-     
-    
       label: "Enabled",
       type: "checkbox",
       click: () => {
         if(status == true)
         {
           axios.post(hostname+"/admin/api.php?disable&auth="+token).then(response =>{
-          console.log(response.data)
+
           status = false
           })
-          
+
         } else {
           axios.post(hostname +"/admin/api.php?enable&auth="+token).then(response =>{
             status = true
-            
+
           })
-          
+
         }
       }
-    
-  },
-  {
-    label: "Info",
-    click: () => {
-      infoWindow.show()
-    }
+
   },
   {
     label: "Settings",
     click: () => {
       secondWindow.show()
     }
+  },
+  {
+    label: "Quit",
+    click: () => {
+      app.quit()
+    }
   }
-  
+
   ])
 
-
-
 axios.get(hostname + "/admin/api.php?").then(response => {
-  console.log(response.data.status)
+
   if(response.data.status == "enabled"){
     status = true
-    contextMenu.items[1].checked = true
-    
+    contextMenu.items[0].checked = true
+
   } else {
     status = false
-    contextMenu.items[1].checked = false
-   
-  }
-})
-  
-  
+    contextMenu.items[0].checked = false
 
+  }
+}) */
 
   if(process.platform==="darwin"){
     const trayIcon = path.join(__dirname, "../assets/darwin/iconTemplate@2x.png");
@@ -190,29 +148,23 @@ axios.get(hostname + "/admin/api.php?").then(response => {
     const trayIcon = path.join(__dirname, "../assets/win/icon.png");
     tray = new Tray(trayIcon);
   }
-  
-
- 
-
-
 
   tray.on("click", toggleWindow);
 
   //Makes it possible to right click to close the app and not double click
-  tray.on("right-click", () => {
+/*  tray.on("right-click", () => {
     tray.popUpContextMenu(contextMenu)
   });
 
-
+*/
 }
-
 
 
 //For opening and closing second window or settings window, on close it reloads mainWindow
 ipcMain.on("user-data", (event, arg) => {
   secondWindow.hide()
   mainWindow.reload();
-  mainWindow.show();
+  //mainWindow.show();
 });
 
 ipcMain.on("exit-stats", (event, arg) => {
@@ -221,7 +173,7 @@ ipcMain.on("exit-stats", (event, arg) => {
 
 ipcMain.on("open-settings", (event, arg) => {
   secondWindow.show();
-  
+
 });
 
 if(process.platform==="darwin"){
@@ -238,16 +190,14 @@ if(process.platform==="darwin"){
   });
 }
 
-
-
 //Creates mainWindow and secondWindow and makes CMD + C and CMD + V work.
 
 // Starts the app
 //---------------------------------
 app.on("ready", () => {
-  
+
   createWindow();
-  autoUpdater.checkForUpdatesAndNotify();
+  autoUpdater.checkUpdates()
   trayMenu();
 
   if (process.platform === "darwin") {
@@ -272,37 +222,6 @@ app.on("ready", () => {
 }
 });
 
-function sendStatusToWindow(text) {
-
-  mainWindow.webContents.send("update", text);
-}
-
-//This is for future use. Note that valid now
-autoUpdater.on("checking-for-update", () => {
-  sendStatusToWindow("Checking for update...");
-})
-autoUpdater.on("update-available", (info) => {
-  sendStatusToWindow("Update available.");
-  console.log(info);
-})
-autoUpdater.on("update-not-available", (info) => {
-  sendStatusToWindow("Update not available.");
-})
-autoUpdater.on("error", (err) => {
-  sendStatusToWindow("Error in auto-updater. " + err);
-  console.log(err)
-})
-autoUpdater.on("download-progress", (progressObj) => {
-  
-  console.log(progressObj)
-})
-
-
-autoUpdater.on("update-downloaded", (releaseNotes) => {
-  sendStatusToWindow("Update available.");
-  console.log(releaseNotes);
-})
-
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
 
@@ -318,14 +237,4 @@ app.on("activate", () => {
   }
 })
 
-
-//Thanks to Kenneth, The Viking of the North for the name
 //Thanks to Josy_Dom_Alexis on Pixabay for the icon
-
-
-
-
-
-
-
-
