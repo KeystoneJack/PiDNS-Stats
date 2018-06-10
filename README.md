@@ -2,7 +2,7 @@
 
 An app for looking at DNS Blocker stats, just a simple tray app. Download it from realeses https://github.com/KeystoneJack/PiDNS-Stats/releases
 
-![alt text](https://raw.githubusercontent.com/KeystoneJack/Stats-for-Pi-Hole/master/Screen1.png) ![alt text](https://raw.githubusercontent.com/KeystoneJack/Stats-for-Pi-Hole/master/ScreenWin.png) ![alt text](https://raw.githubusercontent.com/KeystoneJack/Stats-for-Pi-Hole/master/Screen2.png)
+![alt text](https://raw.githubusercontent.com/KeystoneJack/Stats-for-Pi-Hole/master/Screen1.png) ![alt text](https://raw.githubusercontent.com/KeystoneJack/Stats-for-Pi-Hole/master/ScreenWin.png) ![alt text]
 
 # Running from source
 
